@@ -6,8 +6,8 @@ _start:
   la t0, trap_entry
   csrw mtvec, t0
 
-  li a7, 1
-  li a0, 'K'
+  li a7, 4
+  la a0, hello_msg
   ecall
 
   li a7, 93
@@ -44,3 +44,6 @@ trap_entry:
   addi t0, t0, 4
   csrw mepc, t0
   mret
+
+.section .data
+hello_msg: .string "Hello from the Kernel API!\n"

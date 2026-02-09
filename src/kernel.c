@@ -7,6 +7,13 @@ void handle_trap(uint32_t cause, uint32_t arg0, uint32_t syscall_id) {
       case 1:
         *uart = (char)arg0;
         break;
+      case 4:
+        char* str = (char*)arg0;
+        while (*str != '\0') {
+          *uart = *str;
+          str++;
+        }
+        break;
       case 93:
         *uart = 'Q';
         break;
