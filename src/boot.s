@@ -6,6 +6,8 @@ _start:
   la t0, trap_entry
   csrw mtvec, t0
 
+  jal test_malloc
+
   li a7, 4
   la a0, hello_msg
   ecall
@@ -30,6 +32,7 @@ trap_entry:
   csrr a0, mcause
 
   jal ra, handle_trap
+  sw a0, 4(sp)
 
   #  Restore the registers from memory
   lw ra, 0(sp)
@@ -46,4 +49,4 @@ trap_entry:
   mret
 
 .section .data
-hello_msg: .string "Hello from the Kernel API!\n"
+hello_msg: .string "Hello from the Kernel API! updated\n"

@@ -7,5 +7,8 @@ SECTIONS{
   .text : { *(.text) }
   .data : { *(.data) }
 
-  stack_top = . + 0x100000;
+  . = ALIGN(16);
+  heap_start = .;
+
+  stack_top = 0x88000000;
 }
