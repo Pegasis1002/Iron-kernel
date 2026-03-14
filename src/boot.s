@@ -6,12 +6,26 @@ _start:
   la t0, trap_entry
   csrw mtvec, t0
 
+  # --- Enable Timer Interrupts --- #
+  li t0, 0x80
+  csrs mie, t0
+
+  li t0, 0x08
+  csrs mstatus, t0
+
+
+  # --- Tests --- #
   jal test_malloc
+
+  jal test_timer
+
+  jal setup_timer_alarm
 
   li a7, 4
   la a0, hello_msg
   ecall
 
+  # --- 出口 --- #
   li a7, 93
   ecall
 
