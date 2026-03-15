@@ -6,6 +6,15 @@ extern uint32_t heap_start;
 
 static uint32_t current_break = 0;
 
+void setup_timer_alarm() {
+    volatile uint32_t* mtime_low = (uint32_t*) 0x0200BFF8;
+    volatile uint32_t* mtimecmp_low = (uint32_t*) 0x02004000;
+
+    // Set the alarm to 1000ms (1 second) in the future
+    uint32_t now = *mtime_low;
+    *mtimecmp_low = now + 1000; 
+}
+
 uint32_t handle_trap(uint32_t cause, uint32_t arg0, uint32_t syscall_id) {
   char* uart = (char*) 0x10000000;
 
@@ -57,6 +66,17 @@ uint32_t handle_trap(uint32_t cause, uint32_t arg0, uint32_t syscall_id) {
   return 0;
 }
 
+char get_char() {
+  volatile uint32_t* keyboard  = (uint32_t*) 0x10000060;
+  uint32_t key = *keyboard;
+  if (key != 0) {
+    *keyboard = 0;
+    return (char)key;
+  }
+}
+
+
+//--- Tests ---//
 void test_malloc() {
     char* uart = (char*) 0x10000000;
     
@@ -109,29 +129,3 @@ void test_timer() {
   }
 }
 
-void setup_timer_alarm() {
-    volatile uint32_t* mtime_low = (uint32_t*) 0x0200BFF8;
-    volatile uint32_t* mtimecmp_low = (uint32_t*) 0x02004000;
-
-    // Set the alarm to 1000ms (1 second) in the future
-    uint32_t now = *mtime_low;
-    *mtimecmp_low = now + 1000; 
-}
-
-void test_timer_echo() {
-    volatile uint32_t* mtime_low = (uint32_t*) 0x0200BFF8;
-    char* uart = (char*) 0x10000000;
-
-    uint32_t t1 = *mtime_low;
-    
-    // Busy loop to let host time pass
-    for (int i = 0; i < 500000; i++) { asm volatile("nop"); }
-    
-    uint32_t t2 = *mtime_low;
-
-    if (t2 > t1) {
-        *uart = 'T'; // Success: Timer is Ticking!
-    } else {
-        *uart = 'F'; // Failure: Timer is Frozen at 0
-    }
-}

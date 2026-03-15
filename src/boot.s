@@ -13,17 +13,14 @@ _start:
   li t0, 0x08
   csrs mstatus, t0
 
-
   # --- Tests --- #
   jal test_malloc
-
-  jal test_timer
-
-  jal setup_timer_alarm
 
   li a7, 4
   la a0, hello_msg
   ecall
+
+  jal run_shell
 
   # --- 出口 --- #
   li a7, 93
